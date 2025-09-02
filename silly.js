@@ -74,11 +74,16 @@
       <div class="options" id="options"></div>
     </div>
     <div id="result">
-      <h2>Your MBTI Type:</h2>
-      <p id="mbtiType"></p>
-      <p id="description"></p>
-    </div>
-  </div>
+  <h2>Your MBTI Type:</h2>
+  <p id="mbtiType"></p>
+  <p id="description"></p>
+  <a id="formLink" href="https://forms.gle/4T6yEV4emf7oDNYF8" target="_blank" 
+     style="display:inline-block; margin-top:20px; padding:12px 20px; background:#28a745; 
+            color:white; border-radius:8px; text-decoration:none; font-weight:bold;">
+    Complete Reflection Form
+  </a>
+</div>
+
 
 <script>
 const questions = [
@@ -122,7 +127,7 @@ const questions = [
     options:[{text:"Big team", value:"E"}, {text:"Small group", value:"I"}, {text:"Solo work", value:"I"}]},
   {q:"Your ideal vacation would be:", 
     options:[{text:"Exploring a busy city", value:"E"}, {text:"A mix of adventure & downtime", value:"N"}, {text:"Quiet cabin/beach", value:"I"}]},
-  {q:"I find it easy to strike up conversations with strangers.", options:[{text:"True", value:"E"}, {text:"False", value:"I"}]},
+  {q:"I find it easy to strike up conversations with strangers.", options:[{text:"True", value:"E"}, {text:"False", value:"I"}]}, // Samiliar question of previous
   {q:"I often prefer listening over talking in groups.", options:[{text:"True", value:"I"}, {text:"False", value:"E"}]}
 ];
 
@@ -169,7 +174,22 @@ function showResult() {
     "INTJ":"The Mastermind – strategic, logical, independent.",
     "ENFP":"The Inspirer – creative, social, enthusiastic.",
     "ISTJ":"The Inspector – practical, detail-oriented, reliable.",
-    "ESFP":"The Performer – spontaneous, fun-loving, energetic."
+    "ESFP":"The Performer – spontaneous, fun-loving, energetic.",
+    "INTP":"The Logician – philosophical, logical, and fascinated by complex ideas.",
+    "ISFJ":"The Protector – loyal, caring, and protective of others.",
+    "INFJ":"The Advocate –  idealistic, creative, and driven to help others.",
+    "INFP":"The Mediator – imaginative, value-driven, and compassionate.",
+    "ISTP":"The Crafter –  independent, observant, and good at practical problem-solving.",
+    "ISFP":"The Artist –  artistic, flexible, and enjoys new experiences.",
+    "ENTJ":"The Commander – strategic leaders, motivated to organize change.",
+    "ENTP":"The Debator – inspired innovators, seeking new solutions to challenging problems.",
+    "ENFJ":"The Protagonist – charismatic, warm, idealistic, and socially aware leaders",
+    "ESTJ":"The Executive –  organized, logical, responsible, and decisive",
+    "ESFJ":"The Caregiver – outgoing, organized, warm, and empathetic",
+    "ESTP":"The Entertainer – spontaneous, energetic, and enthusiastic",
+
+
+
     // (add more descriptions as needed)
   };
   document.getElementById("description").innerText = descriptions[mbti] || "Your unique MBTI profile.";
