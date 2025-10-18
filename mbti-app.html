@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MBTI Team Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="navbar">
+  <div class="logo" onclick="showSection('home')" style="cursor:pointer;">
+    <img src="images/buddyup-logo.png" alt="Buddy Up Logo">
+    <span class="logo-text">Buddy Up!</span>
+  </div>
+
+  <ul>
+    <li><button class="nav-btn active" onclick="showSection('home')">Home</button></li>
+    <li><button class="nav-btn" onclick="showSection('about')">About</button></li>
+    <li><button class="nav-btn" onclick="showSection('quiz')">MBTI Test</button></li>
+    <li><button class="nav-btn" onclick="showSection('teacher')">Teacher Area</button></li>
+  </ul>
+</nav>
+
+  <section id="home" class="page-section active">
+    <div class="container">
+      <h1>Welcome to Buddy Up!</h1>
+      <p style="text-align: center; font-size: 1.2rem; color: #666;">
+        Discover your personality type and meet new people!
+      </p>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <h3>Take the Test</h3>
+          <p>Complete the MBTI assessment to discover your personality type</p>
+        </div>
+        <div class="info-card">
+          <h3>Learn About MBTI</h3>
+          <p>Understand the 16 personality types and their characteristics</p>
+        </div>
+        <div class="info-card">
+          <h3>Build Teams</h3>
+          <p>Teachers can create balanced seating arrangements</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="page-section">
+    <div class="container">
+      <h1>About MBTI</h1>
+      <h2>What is MBTI?</h2>
+      <p>
+        The Myers-Briggs Type Indicator (MBTI) categorizes individuals into 16 distinct personality types based on four dichotomies.
+      </p>
+
+      <div class="info-cards">
+        <div class="info-card"><h3>E vs I</h3><p>Extraversion vs Introversion</p></div>
+        <div class="info-card"><h3>S vs N</h3><p>Sensing vs Intuition</p></div>
+        <div class="info-card"><h3>T vs F</h3><p>Thinking vs Feeling</p></div>
+        <div class="info-card"><h3>J vs P</h3><p>Judging vs Perceiving</p></div>
+      </div>
+
+      <h2>How This App Works</h2>
+      <ul style="line-height: 2; margin-left: 20px;">
+        <li>Students take a 20-question personality test</li>
+        <li>Results determine their MBTI type</li>
+        <li>Teachers can create balanced team arrangements</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="quiz" class="page-section">
+    <div class="container">
+      <div id="nameInput" class="name-input-section">
+        <h1>MBTI Personality Test</h1>
+        <p>Enter your name to begin the assessment</p>
+        <input type="text" id="studentName" placeholder="Your Name">
+        <button onclick="startQuiz()">Start Quiz</button>
+      </div>
+
+      <div id="quizContent" class="hidden">
+        <h1>Question <span id="questionNumber">1</span> of 20</h1>
+        <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        <div id="questionsWrapper"></div>
+
+        <div id="result" class="result">
+          <h1>Quiz Complete!</h1>
+          <div class="mbti-result" id="mbti"></div>
+          <p style="font-size: 1.2rem; color: #666;">Great job, <span id="completedName"></span>! Your results have been saved.</p>
+          <button onclick="resetQuiz()">Take Quiz Again</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="teacher" class="page-section">
+    <div class="container">
+      <div id="loginSection">
+        <h1>Teacher Login</h1>
+        <p style="text-align: center;">Enter the password to access the teacher area</p>
+        <div style="max-width: 400px; margin: 30px auto;">
+          <input type="password" id="passwordInput" placeholder="Password">
+          <p id="errorMessage" class="error-message">Incorrect password. Try again.</p>
+          <button onclick="checkPassword()">Login</button>
+        </div>
+      </div>
+
+      <div id="seatingSection" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+          <h1 style="margin: 0;">Teacher Dashboard</h1>
+          <button onclick="logout()" class="btn-secondary">Logout</button>
+        </div>
+
+        <div id="studentStats" class="info-cards">
+          <div class="info-card"><h3>Total Students</h3><p id="totalStudents">0</p></div>
+          <div class="info-card"><h3>MBTI Types</h3><p id="uniqueTypes">0</p></div>
+        </div>
+
+        <h2>Generate Seating Plan</h2>
+        <div class="form-grid">
+          <div><label>Number of Groups</label><input type="number" id="groupCount" value="4" min="1"></div>
+          <div><label>Seats per Group</label><input type="number" id="seatsPerGroup" value="5" min="1"></div>
+        </div>
+
+        <button onclick="createSeating()">Generate Balanced Teams</button>
+        <div id="seatingResult" class="seating-grid"></div>
+
+<div id="exportSection" class="hidden" style="margin-top: 20px; text-align: center;">
+  <button onclick="exportToCSV()" class="btn-success">Export to CSV</button>
+  <button onclick="clearStudents()" class="btn-secondary" style="margin-left: 10px;">Clear Students</button>
+</div>
+
+
+        
+        <div id="studentListSection" class="hidden">
+          <h2>All Students</h2>
+          <table class="student-table">
+            <thead><tr><th>Name</th><th>MBTI Type</th></tr></thead>
+            <tbody id="studentTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <script src="script.js"></script>
+</body>
+</html>
