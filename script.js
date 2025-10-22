@@ -75,15 +75,36 @@ function loadQuestion() {
 function answerQuestion(value) {
   answers.push(value);
   currentQuestion++;
+
   if (currentQuestion < questions.length) {
     loadQuestion();
   } else {
-    calculateMBTI();
+    showSeeResults();
   }
 }
 
+function showSeeResults() {
+  const wrapper = document.getElementById("questionsWrapper");
+  wrapper.innerHTML = `
+    <div class="question active" style="text-align: center;">
+      <h2>All questions completed!</h2>
+      <p>Click below to see your results.</p>
+      <button onclick="finishQuiz()">See Results</button>
+    </div>
+  `;
+
+  // Fill progress bar to full when they can see results
+  document.getElementById("progressBar").style.width = "100%";
+  document.getElementById("questionNumber").textContent = questions.length;
+}
+
+function finishQuiz() {
+  calculateMBTI();
+}
+
+
 function updateProgress() {
-  const progress = ((currentQuestion) / questions.length) * 100;
+  const progress = (currentQuestion / questions.length) * 100;
   document.getElementById("progressBar").style.width = progress + "%";
   document.getElementById("questionNumber").textContent = currentQuestion + 1;
 }
@@ -119,13 +140,15 @@ function resetQuiz() {
 }
 
 // ---------- TEACHER AREA ----------
+let teacherStudents = [];
+
 function checkPassword() {
   const input = document.getElementById("passwordInput");
   const error = document.getElementById("errorMessage");
   if (input.value === "teacher123") {
     document.getElementById("loginSection").classList.add("hidden");
     document.getElementById("seatingSection").classList.remove("hidden");
-    loadStudents();
+    updateTeacherTable();
   } else {
     error.classList.add("active");
   }
@@ -137,72 +160,149 @@ function logout() {
   document.getElementById("passwordInput").value = "";
 }
 
-function loadStudents() {
-  const students = JSON.parse(localStorage.getItem("students") || "[]");
-  document.getElementById("totalStudents").textContent = students.length;
-  const uniqueTypes = new Set(students.map(s => s.mbti));
-  document.getElementById("uniqueTypes").textContent = uniqueTypes.size;
+// Add student manually
+function addStudent() {
+  const name = document.getElementById("teacherName").value.trim();
+  const mbti = document.getElementById("teacherMBTI").value;
 
-  const tbody = document.getElementById("studentTableBody");
-  tbody.innerHTML = "";
-  students.forEach(s => {
-    const row = document.createElement("tr");
-    row.innerHTML = `<td>${s.name}</td><td><span class="mbti-badge">${s.mbti}</span></td>`;
-    tbody.appendChild(row);
-  });
-
-  if (students.length > 0)
-    document.getElementById("studentListSection").classList.remove("hidden");
-}
-
-function createSeating() {
-  const groupCount = parseInt(document.getElementById("groupCount").value);
-  const seatsPerGroup = parseInt(document.getElementById("seatsPerGroup").value);
-  const students = JSON.parse(localStorage.getItem("students") || "[]");
-  const seatingResult = document.getElementById("seatingResult");
-  seatingResult.innerHTML = "";
-
-  if (students.length === 0) {
-    seatingResult.innerHTML = "<p>No students available.</p>";
+  if (!name || !mbti) {
+    alert("Please enter a name and select an MBTI type.");
     return;
   }
 
-  // shuffle students
-  const shuffled = [...students].sort(() => 0.5 - Math.random());
-  for (let i = 0; i < groupCount; i++) {
-    const groupDiv = document.createElement("div");
-    groupDiv.classList.add("group");
-    groupDiv.innerHTML = `<h3>Group ${i + 1}</h3>`;
-    const groupStudents = shuffled.slice(i * seatsPerGroup, (i + 1) * seatsPerGroup);
-    groupStudents.forEach(s => {
-      groupDiv.innerHTML += `<div class="student">${s.name} - <span class="mbti-badge">${s.mbti}</span></div>`;
-    });
-    seatingResult.appendChild(groupDiv);
+  teacherStudents.push({ name, mbti });
+  document.getElementById("teacherName").value = "";
+  document.getElementById("teacherMBTI").value = "";
+  updateTeacherTable();
+}
+
+
+// Update teacher student list table
+function updateTeacherTable() {
+  const tbody = document.getElementById("studentTableBody");
+  tbody.innerHTML = "";
+  teacherStudents.forEach((s, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${s.name}</td>
+      <td><span class="mbti-badge">${s.mbti}</span></td>
+      <td><button onclick="removeStudent(${index})" class="remove-btn">❌</button></td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  document.getElementById("totalStudents").textContent = teacherStudents.length;
+  const uniqueTypes = new Set(teacherStudents.map(s => s.mbti));
+  document.getElementById("uniqueTypes").textContent = uniqueTypes.size;
+}
+
+// Remove individual student
+function removeStudent(index) {
+  teacherStudents.splice(index, 1);
+  updateTeacherTable();
+}
+
+// Clear all students
+function clearStudents() {
+  if (confirm("Are you sure you want to clear all students?")) {
+    teacherStudents = [];
+    updateTeacherTable();
   }
+}
+
+function generateSeating() {
+  const groupCount = parseInt(document.getElementById('groupCount').value);
+  const seatsPerGroup = parseInt(document.getElementById('seatsPerGroup').value);
+  const container = document.getElementById('seatingResult');
+  container.innerHTML = "";
+
+  if (teacherStudents.length === 0) {
+    alert("Add some students first!");
+    return;
+  }
+
+  if (groupCount * seatsPerGroup < teacherStudents.length) {
+    alert("Not enough seats for all students!");
+    return;
+  }
+
+  // 🔢 MBTI frequencies (approx. US population)
+  const mbtiFrequency = {
+    ISTJ: 11.6, ISFJ: 13.8, INFJ: 1.5, INTJ: 2.1,
+    ISTP: 5.4, ISFP: 8.8, INFP: 4.4, INTP: 4.8,
+    ESTP: 4.3, ESFP: 8.5, ENFP: 8.1, ENTP: 3.2,
+    ESTJ: 8.7, ESFJ: 12.3, ENFJ: 2.5, ENTJ: 1.8
+  };
+
+  // ✅ Group students by MBTI
+  const typeGroups = {};
+  teacherStudents.forEach(s => {
+    if (!typeGroups[s.mbti]) typeGroups[s.mbti] = [];
+    typeGroups[s.mbti].push(s);
+  });
+
+  // ✅ Sort MBTI types by rarity (rarest first)
+  const sortedTypes = Object.keys(typeGroups).sort(
+    (a, b) => (mbtiFrequency[a] || 0) - (mbtiFrequency[b] || 0)
+  );
+
+  // ✅ Prepare empty groups
+  const groups = Array.from({ length: groupCount }, () => []);
+
+  // ✅ Step 1: Evenly distribute rare types first
+  let i = 0;
+  sortedTypes.forEach(type => {
+    typeGroups[type].forEach(student => {
+      groups[i].push(student);
+      i = (i + 1) % groupCount;
+    });
+  });
+
+  // ✅ Step 2: Shuffle seats within groups for variety
+  groups.forEach(g => g.sort(() => Math.random() - 0.5));
+
+  // ✅ Step 3: Render seating chart
+  groups.forEach((group, index) => {
+    const groupDiv = document.createElement("div");
+    groupDiv.classList.add("group-box");
+    groupDiv.innerHTML = `<h3>Group ${index + 1}</h3>`;
+
+    const seatGrid = document.createElement("div");
+    seatGrid.classList.add("seat-grid");
+
+    for (let j = 0; j < seatsPerGroup; j++) {
+      const seat = document.createElement("div");
+      seat.classList.add("seat");
+
+      if (group[j]) {
+        seat.classList.add("filled");
+        seat.innerHTML = `<strong>${group[j].name}</strong><br><small>${group[j].mbti}</small>`;
+      } else {
+        seat.classList.add("empty");
+        seat.textContent = "Empty Seat";
+      }
+
+      seatGrid.appendChild(seat);
+    }
+
+    groupDiv.appendChild(seatGrid);
+    container.appendChild(groupDiv);
+  });
 
   document.getElementById("exportSection").classList.remove("hidden");
 }
 
+
+// Export seating chart to CSV
 function exportToCSV() {
-  const students = JSON.parse(localStorage.getItem("students") || "[]");
-  if (!students.length) return;
+  if (teacherStudents.length === 0) return alert("No students to export!");
+
   let csv = "Name,MBTI\n";
-  students.forEach(s => csv += `${s.name},${s.mbti}\n`);
+  teacherStudents.forEach(s => csv += `${s.name},${s.mbti}\n`);
   const blob = new Blob([csv], { type: "text/csv" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = "mbti_results.csv";
+  a.download = "mbti_seating_chart.csv";
   a.click();
 }
-
-function clearStudents() {
-  const confirmClear = confirm("⚠️ Are you sure you want to delete all saved students? This action cannot be undone.");
-  if (confirmClear) {
-    localStorage.removeItem('mbtiStudents');
-    updateTeacherDashboard(); // Refresh dashboard
-    alert("All student data has been cleared.");
-  }
-}
-
-localStorage.clear();
 

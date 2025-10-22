@@ -24,6 +24,7 @@
 
   <section id="home" class="page-section active">
     <div class="container">
+       <img src="images/buddyup-logo1.png" alt="Buddy Up illustration" class="welcome-image">
       <h1>Welcome to Buddy Up!</h1>
       <p style="text-align: center; font-size: 1.2rem; color: #666;">
         Discover your personality type and meet new people!
@@ -94,56 +95,70 @@
     </div>
   </section>
 
-  <section id="teacher" class="page-section">
-    <div class="container">
-      <div id="loginSection">
-        <h1>Teacher Login</h1>
-        <p style="text-align: center;">Enter the password to access the teacher area</p>
-        <div style="max-width: 400px; margin: 30px auto;">
-          <input type="password" id="passwordInput" placeholder="Password">
-          <p id="errorMessage" class="error-message">Incorrect password. Try again.</p>
-          <button onclick="checkPassword()">Login</button>
-        </div>
-      </div>
+<section id="teacher" class="page-section">
+  <div class="teacher-container">
+    <h2>Teacher Dashboard</h2>
+    <p>Add students manually, generate balanced seating, and export results.</p>
 
-      <div id="seatingSection" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-          <h1 style="margin: 0;">Teacher Dashboard</h1>
-          <button onclick="logout()" class="btn-secondary">Logout</button>
-        </div>
+    <!-- 🧑‍🏫 Student Input Area -->
+    <div id="teacherInputs">
+      <input type="text" id="teacherName" placeholder="Enter student name">
 
-        <div id="studentStats" class="info-cards">
-          <div class="info-card"><h3>Total Students</h3><p id="totalStudents">0</p></div>
-          <div class="info-card"><h3>MBTI Types</h3><p id="uniqueTypes">0</p></div>
-        </div>
+      <select id="teacherMBTI" title="Select the student's MBTI type">
+        <option value="">Select MBTI Type</option>
+        <option value="INTJ" title="Imaginative and strategic thinkers, with a plan for everything.">INTJ – Architect</option>
+        <option value="INTP" title="Inventive and curious, loves abstract theories and problem-solving.">INTP – Logician</option>
+        <option value="ENTJ" title="Bold, imaginative, and strong-willed leaders, always finding a way.">ENTJ – Commander</option>
+        <option value="ENTP" title="Smart and curious thinkers who cannot resist an intellectual challenge.">ENTP – Debater</option>
+        <option value="INFJ" title="Quiet and mystical, inspiring idealists with a deep sense of purpose.">INFJ – Advocate</option>
+        <option value="INFP" title="Idealistic and empathetic, driven by personal values and beliefs.">INFP – Mediator</option>
+        <option value="ENFJ" title="Charismatic and inspiring leaders, able to mesmerize their audience.">ENFJ – Protagonist</option>
+        <option value="ENFP" title="Enthusiastic, creative, and sociable free spirits who love new ideas.">ENFP – Campaigner</option>
+        <option value="ISTJ" title="Practical and fact-minded individuals, whose reliability cannot be doubted.">ISTJ – Logistician</option>
+        <option value="ISFJ" title="Very dedicated and warm protectors, always ready to defend loved ones.">ISFJ – Defender</option>
+        <option value="ESTJ" title="Excellent administrators, unsurpassed at managing people or things.">ESTJ – Executive</option>
+        <option value="ESFJ" title="Extraordinarily caring, social, and popular people, always eager to help.">ESFJ – Consul</option>
+        <option value="ISTP" title="Bold and practical experimenters, masters of all kinds of tools.">ISTP – Virtuoso</option>
+        <option value="ISFP" title="Flexible and charming artists, always ready to explore and experience something new.">ISFP – Adventurer</option>
+        <option value="ESTP" title="Smart, energetic, and very perceptive people who truly enjoy living on the edge.">ESTP – Entrepreneur</option>
+        <option value="ESFP" title="Spontaneous, energetic, and enthusiastic entertainers – life is never boring around them.">ESFP – Entertainer</option>
+      </select>
 
-        <h2>Generate Seating Plan</h2>
-        <div class="form-grid">
-          <div><label>Number of Groups</label><input type="number" id="groupCount" value="4" min="1"></div>
-          <div><label>Seats per Group</label><input type="number" id="seatsPerGroup" value="5" min="1"></div>
-        </div>
-
-        <button onclick="createSeating()">Generate Balanced Teams</button>
-        <div id="seatingResult" class="seating-grid"></div>
-
-<div id="exportSection" class="hidden" style="margin-top: 20px; text-align: center;">
-  <button onclick="exportToCSV()" class="btn-success">Export to CSV</button>
-  <button onclick="clearStudents()" class="btn-secondary" style="margin-left: 10px;">Clear Students</button>
-</div>
-
-
-        
-        <div id="studentListSection" class="hidden">
-          <h2>All Students</h2>
-          <table class="student-table">
-            <thead><tr><th>Name</th><th>MBTI Type</th></tr></thead>
-            <tbody id="studentTableBody"></tbody>
-          </table>
-        </div>
-      </div>
+      <button onclick="addStudent()">Add Student</button>
+      <button onclick="clearStudents()">Clear All</button>
     </div>
-  </section>
 
+    <!-- 📋 Stats -->
+    <p>Total Students: <span id="totalStudents">0</span></p>
+    <p>Unique MBTI Types: <span id="uniqueTypes">0</span></p>
+
+    <!-- 🧑‍🎓 Student Table -->
+    <table class="student-table">
+      <thead>
+        <tr><th>Name</th><th>MBTI</th><th>Action</th></tr>
+      </thead>
+      <tbody id="studentTableBody"></tbody>
+    </table>
+
+    <!-- 💺 Seating Plan Controls -->
+    <div class="seating-controls">
+      <h3>Generate Seating Plan</h3>
+      <label>Number of Groups:</label>
+      <input type="number" id="groupCount" value="4" min="1">
+      <label>Seats per Group:</label>
+      <input type="number" id="seatsPerGroup" value="5" min="1">
+      <button onclick="generateSeating()">Generate Seating</button>
+    </div>
+
+    <!-- 🪑 Seating Grid Display -->
+    <div id="seatingResult" class="seating-grid"></div>
+
+    <!-- 📤 Export Section -->
+    <div id="exportSection" class="hidden" style="margin-top: 20px; text-align: center;">
+      <button onclick="exportToCSV()" class="btn-success">Export as CSV</button>
+    </div>
+  </div>
+</section>
 
 
   <script src="script.js"></script>
