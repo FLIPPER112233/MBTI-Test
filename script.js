@@ -14,6 +14,10 @@ function showSection(sectionId) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("active");
+}
+
 // ---------- GLOBAL VARIABLES ----------
 let currentQuestion = 0;
 let answers = [];
@@ -305,4 +309,6 @@ function exportToCSV() {
   a.download = "mbti_seating_chart.csv";
   a.click();
 }
+
+
 
