@@ -230,7 +230,7 @@ function generateSeating() {
     return;
   }
 
-  // 🔢 MBTI frequencies (approx. US population)
+  // MBTI frequencies (approx. US population)
   const mbtiFrequency = {
     ISTJ: 11.6, ISFJ: 13.8, INFJ: 1.5, INTJ: 2.1,
     ISTP: 5.4, ISFP: 8.8, INFP: 4.4, INTP: 4.8,
@@ -238,22 +238,22 @@ function generateSeating() {
     ESTJ: 8.7, ESFJ: 12.3, ENFJ: 2.5, ENTJ: 1.8
   };
 
-  // ✅ Group students by MBTI
+  // Group students by MBTI
   const typeGroups = {};
   teacherStudents.forEach(s => {
     if (!typeGroups[s.mbti]) typeGroups[s.mbti] = [];
     typeGroups[s.mbti].push(s);
   });
 
-  // ✅ Sort MBTI types by rarity (rarest first)
+  // Sort MBTI types by rarity (rarest first)
   const sortedTypes = Object.keys(typeGroups).sort(
     (a, b) => (mbtiFrequency[a] || 0) - (mbtiFrequency[b] || 0)
   );
 
-  // ✅ Prepare empty groups
+  // Prepare empty groups
   const groups = Array.from({ length: groupCount }, () => []);
 
-  // ✅ Step 1: Evenly distribute rare types first
+  // Step 1: Evenly distribute rare types first
   let i = 0;
   sortedTypes.forEach(type => {
     typeGroups[type].forEach(student => {
@@ -262,10 +262,10 @@ function generateSeating() {
     });
   });
 
-  // ✅ Step 2: Shuffle seats within groups for variety
+  // Step 2: Shuffle seats within groups for variety
   groups.forEach(g => g.sort(() => Math.random() - 0.5));
 
-  // ✅ Step 3: Render seating chart
+  // Step 3: Render seating chart
   groups.forEach((group, index) => {
     const groupDiv = document.createElement("div");
     groupDiv.classList.add("group-box");
@@ -310,5 +310,47 @@ function exportToCSV() {
   a.click();
 }
 
+function toggleMenu() {
+  const navLinks = document.getElementById("navLinks");
+  navLinks.classList.toggle("active");
+}
+
+// ICE BREAKER QUESTIONS
+const iceBreakerQuestions = [
+  "Coffee or tea?",
+  "What’s your dream vacation spot?",
+  "Dog or cat person?",
+  "What’s your go-to snack?",
+  "Favorite movie or show?",
+  "Summer or winter?",
+  "One word to describe yourself?",
+  "What’s a lesson you’ve learned recently?",
+  "What do you value most in friendships?",
+  "If you could relive one day, which would it be?",
+  "What’s something you’re grateful for right now?",
+  "What does peace look like to you?",
+  "If you could change one thing about the world, what would it be?",
+  "What’s a dream you have?",
+  "If you could have any superpower, what would it be?",
+  "What hobby do you want to start?",
+  "Who inspires you the most?",
+  "What’s a small joy that always makes you smile?",
+  "If you could meet any historical figure, who would it be?",
+  "What’s a goal you’re working toward?"
+];
+
+function showIceBreaker() {
+  document.getElementById("iceBreakerModal").classList.remove("hidden");
+  newIceBreaker();
+}
+
+function newIceBreaker() {
+  const q = iceBreakerQuestions[Math.floor(Math.random() * iceBreakerQuestions.length)];
+  document.getElementById("iceBreakerQuestion").textContent = q;
+}
+
+function closeIceBreaker() {
+  document.getElementById("iceBreakerModal").classList.add("hidden");
+}
 
 

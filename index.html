@@ -8,19 +8,40 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <nav class="navbar">
-  <div class="logo" onclick="showSection('home')" style="cursor:pointer;">
-    <img src="images/buddyup-logo.png" alt="Buddy Up Logo">
-    <span class="logo-text">Buddy Up!</span>
+
+  
+<div id="iceBreakerModal" class="icebreaker-modal hidden">
+  <div class="icebreaker-content">
+    <h2>☕ Ice Breaker</h2>
+    <p id="iceBreakerQuestion">Loading...</p>
+    <div class="icebreaker-buttons">
+      <button onclick="newIceBreaker()">New Question</button>
+      <button onclick="closeIceBreaker()">Close</button>
+    </div>
+  </div>
+</div>
+
+  
+<nav class="navbar">
+  <div class="nav-left">
+    <img src="images/buddyup-logo.png" alt="Buddy Up! Logo" class="logo">
+    <span class="site-title">Buddy Up!</span>
   </div>
 
-  <ul>
-    <li><button class="nav-btn active" onclick="showSection('home')">Home</button></li>
-    <li><button class="nav-btn" onclick="showSection('about')">About</button></li>
-    <li><button class="nav-btn" onclick="showSection('quiz')">MBTI Test</button></li>
-    <li><button class="nav-btn" onclick="showSection('teacher')">Teacher Area</button></li>
-  </ul>
+  <!-- Hamburger menu icon -->
+  <a href="javascript:void(0);" class="menu-toggle" onclick="toggleMenu()">
+    <i class="fa fa-bars"></i>
+  </a>
+
+  <div class="nav-links" id="navLinks">
+    <button class="nav-btn active" onclick="showSection('home'); toggleMenu()">Home</button>
+    <button class="nav-btn" onclick="showSection('about'); toggleMenu()">About</button>
+    <button class="nav-btn" onclick="showSection('quiz'); toggleMenu()">MBTI Test</button>
+    <button class="nav-btn" onclick="showSection('teacher'); toggleMenu()">Teacher Area</button>
+    <button class="nav-btn" onclick="showIceBreaker()">Ice Breaker</button>
+  </div>
 </nav>
+
 
   <section id="home" class="page-section active">
     <div class="container">
@@ -66,7 +87,7 @@
       <ul style="line-height: 2; margin-left: 20px;">
         <li>Students take a 20-question personality test</li>
         <li>Results determine their MBTI type</li>
-        <li>Teachers can create balanced team arrangements</li>
+        <li>Teachers can create unique seating charts based on MBTI types built on an algorithim by Buddy Up!</li>
       </ul>
     </div>
   </section>
@@ -100,7 +121,7 @@
     <h2>Teacher Dashboard</h2>
     <p>Add students manually, generate balanced seating, and export results.</p>
 
-    <!-- 🧑‍🏫 Student Input Area -->
+    <!-- Student Input Area -->
     <div id="teacherInputs">
       <input type="text" id="teacherName" placeholder="Enter student name">
 
@@ -128,11 +149,14 @@
       <button onclick="clearStudents()">Clear All</button>
     </div>
 
-    <!-- 📋 Stats -->
+
+
+
+    <!-- Stats -->
     <p>Total Students: <span id="totalStudents">0</span></p>
     <p>Unique MBTI Types: <span id="uniqueTypes">0</span></p>
 
-    <!-- 🧑‍🎓 Student Table -->
+    <!-- Student Table -->
     <table class="student-table">
       <thead>
         <tr><th>Name</th><th>MBTI</th><th>Action</th></tr>
@@ -140,7 +164,7 @@
       <tbody id="studentTableBody"></tbody>
     </table>
 
-    <!-- 💺 Seating Plan Controls -->
+    <!-- Seating Plan Controls -->
     <div class="seating-controls">
       <h3>Generate Seating Plan</h3>
       <label>Number of Groups:</label>
@@ -150,10 +174,10 @@
       <button onclick="generateSeating()">Generate Seating</button>
     </div>
 
-    <!-- 🪑 Seating Grid Display -->
+    <!-- Seating Grid Display -->
     <div id="seatingResult" class="seating-grid"></div>
 
-    <!-- 📤 Export Section -->
+    <!-- Export Section -->
     <div id="exportSection" class="hidden" style="margin-top: 20px; text-align: center;">
       <button onclick="exportToCSV()" class="btn-success">Export as CSV</button>
     </div>
